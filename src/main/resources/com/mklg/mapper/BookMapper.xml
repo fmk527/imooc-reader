@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mklg.mapper.BookMapper">
+
+    <resultMap id="BaseResultMap" type="com.mklg.pojo.Book">
+        <id property="bookId" column="book_id" jdbcType="BIGINT"/>
+        <result property="bookName" column="book_name" jdbcType="VARCHAR"/>
+        <result property="subTitle" column="sub_title" jdbcType="VARCHAR"/>
+        <result property="author" column="author" jdbcType="VARCHAR"/>
+        <result property="cover" column="cover" jdbcType="VARCHAR"/>
+        <result property="description" column="description" jdbcType="VARCHAR"/>
+        <result property="categoryId" column="category_id" jdbcType="BIGINT"/>
+        <result property="evaluationScore" column="evaluation_score" jdbcType="FLOAT"/>
+        <result property="evaluationQuantity" column="evaluation_quantity" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        book_id
+        ,book_name,sub_title,
+        author,cover,description,
+        category_id,evaluation_score,evaluation_quantity
+    </sql>
+    <update id="updateScore">
+        UPDATE book b
+        set evaluation_score    = (SELECT IFNULL(avg(score), 0)
+                                   from evaluation e
+                                   WHERE e.book_id = b.book_id AND state = 'enable'),
+            evaluation_quantity = (SELECT IFNULL(COUNT(*), 0)
+                                   FROM evaluation e
+                                   WHERE e.book_id = b.book_id AND state = 'enable')
+    </update>
+    <select id="MySelectPage" resultType="com.mklg.vo.BookVo">
+        select b.*,ca.category_name categoryName from book b,category ca
+        <where>
+            <if test="1">
+                b.category_id=ca.category_id
+            </if>
+            <if test="bookVo.bookName !='' and bookVo.bookName != null ">
+                and book_name like concat('%',#{bookVo.bookName},'%')
+            </if>
+            <if test="bookVo.author != '' and bookVo.author != null">
+                and author like concat('%',#{bookVo.author},'%')
+            </if>
+            <if test="bookVo.subTitle != '' and bookVo.subTitle != null">
+                and sub_title like concat('%',#{bookVo.subTitle},'%')
+            </if>
+
+        </where>
+
+
+    </select>
+</mapper>
