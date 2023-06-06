@@ -7,6 +7,7 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="reader2" />
+        <module name="imooc-reader" />
       </profile>
     </annotationProcessing>
   </component>
